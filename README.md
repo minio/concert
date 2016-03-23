@@ -1,4 +1,7 @@
 # concert
+<blockquote>
+To use this tool you need to have a valid domain name. This tool doesn't support the acme DNS challenges yet.
+</blockquote>
 
 Concert is a console based certificate generating tool using letsencrypt.
 
@@ -13,12 +16,19 @@ $ go get -u github.com/minio/concert
 
 Generates certs in `certs` folder by default.
 ```
-$ concert gen <EMAIL> <DOMAIN>
+$ sudo concert gen <EMAIL> <DOMAIN>
 ```
 
 
 Generate certificate other than the default folder.
 
 ```
-$ concert gen --folder my-folder <EMAIL> <DOMAIN>
+$ sudo concert gen --folder my-folder <EMAIL> <DOMAIN>
+```
+
+## On linux
+
+Running as root might not be advisable some times. Use setcap instead on linux:
+```
+setcap cap_net_bind_service=+ep `which concert`
 ```
