@@ -51,14 +51,21 @@ func (u User) GetPrivateKey() crypto.PrivateKey {
 	return u.key
 }
 
+func checkFolder(path string) error {
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return os.MkdirAll(path, 0700)
+	}
+	return nil
+}
+
 func genMain(c *cli.Context) {
 	if !c.Args().Present() || c.Args().First() == "help" {
 		cli.ShowCommandHelpAndExit(c, "gen", 1) // last argument is exit code
 	}
 
 	// Create certs folder.
-	certsDir := c.String("folder")
-	if err := os.MkdirAll(certsDir, 0600); err != nil {
+	certsFolder := c.String("folder")
+	if err := checkFolder(certsFolder); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -88,19 +95,7 @@ func genMain(c *cli.Context) {
 		log.Fatalln(err)
 	}
 
-	// We specify an http port of 5002 and an tls port of 5001 on all
-	// interfaces because we aren't running as root and can't bind a
-	// listener to port 80 and 443 (used later when we attempt to pass
-	// challenges). Keep in mind that we still need to proxy challenge
-	// traffic to port 5002 and 5001.
-	err = client.SetHTTPAddress(":5002")
-	if err != nil {
-		log.Fatalln(err)
-	}
-	err = client.SetTLSAddress(":5001")
-	if err != nil {
-		log.Fatalln(err)
-	}
+	client.ExcludeChallenges([]acme.Challenge{acme.DNS01})
 
 	// New users will need to register; be sure to save it
 	reg, err := client.Register()
@@ -128,7 +123,7 @@ func genMain(c *cli.Context) {
 	// Each certificate comes back with the cert bytes, the bytes of
 	// the client's private key, and a certificate URL. This is where
 	// you should save them to files!
-	err = saveCerts(certsDir, certificates)
+	err = saveCerts(certsFolder, certificates)
 	if err != nil {
 		log.Fatalln(err)
 	}
