@@ -1,13 +1,9 @@
 package main
 
 import (
-	"crypto/rand"
-	"crypto/rsa"
 	"log"
-	"time"
 
 	"github.com/minio/cli"
-	"github.com/xenolf/lego/acme"
 )
 
 func renewMain(c *cli.Context) {
@@ -21,47 +17,8 @@ func renewMain(c *cli.Context) {
 	// Get email and domain.
 	email := c.Args().Get(0)
 
-	// Create a user. New accounts need an email and private key to start with.
-	const rsaKeySize = 2048
-	privateKey, err := rsa.GenerateKey(rand.Reader, rsaKeySize)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// Initialize user.
-	user := User{
-		Email: email,
-		key:   privateKey,
-	}
-
-	// A client facilitates communication with the CA server. This CA
-	// URL is configured for a local dev instance of Boulder running
-	// in Docker in a VM.
-	client, err := acme.NewClient(acmeServer, &user, acme.RSA2048)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client.ExcludeChallenges([]acme.Challenge{acme.DNS01})
-
-	certBytes, err := loadCert(certsDir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-	expTime, err := acme.GetPEMCertExpiration(certBytes)
-	if int(expTime.Sub(time.Now()).Hours()/24.0) > 45 {
-		log.Println("Keys have not expired yet, will not renew.")
-		return
-	}
-	certMeta, err := loadCertMeta(certsDir)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	certMeta.Certificate = certBytes
-
-	isBundle := false
-	newCertificates, err := client.RenewCertificate(certMeta, isBundle)
+	// Renew a certificate.
+	newCertificates, err := renewCerts(email, certsDir)
 	if err != nil {
 		log.Fatalln(err)
 	}

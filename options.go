@@ -21,6 +21,7 @@ import "github.com/minio/cli"
 var commands = []cli.Command{
 	genCmd,
 	renewCmd,
+	serverCmd,
 }
 
 var genCmd = cli.Command{
@@ -45,4 +46,16 @@ var renewCmd = cli.Command{
 		},
 	},
 	Action: renewMain,
+}
+
+var serverCmd = cli.Command{
+	Name:  "server",
+	Usage: "Run in server mode, automatically renews certificates as needed.",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "dir",
+			Value: "certs", // Default.
+		},
+	},
+	Action: serverMain,
 }

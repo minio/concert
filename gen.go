@@ -17,39 +17,13 @@
 package main
 
 import (
-	"crypto"
-	"crypto/rand"
-	"crypto/rsa"
 	"log"
 	"os"
 
 	"github.com/minio/cli"
-	"github.com/xenolf/lego/acme"
 )
 
 const acmeServer = "https://acme-staging.api.letsencrypt.org/directory"
-
-// User - You'll need a user or account type that implements acme.User
-type User struct {
-	Email        string
-	Registration *acme.RegistrationResource
-	key          crypto.PrivateKey
-}
-
-// GetEmail -
-func (u User) GetEmail() string {
-	return u.Email
-}
-
-// GetRegistration -
-func (u User) GetRegistration() *acme.RegistrationResource {
-	return u.Registration
-}
-
-// GetPrivateKey -
-func (u User) GetPrivateKey() crypto.PrivateKey {
-	return u.key
-}
 
 func checkFolder(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
@@ -73,54 +47,15 @@ func genMain(c *cli.Context) {
 	email := c.Args().Get(0)
 	domain := c.Args().Get(1)
 
-	// Create a user. New accounts need an email and private key to start with.
-	const rsaKeySize = 2048
-	privateKey, err := rsa.GenerateKey(rand.Reader, rsaKeySize)
+	newCertificates, err := genCerts(email, domain)
 	if err != nil {
 		log.Fatalln(err)
-	}
-
-	// Initialize user.
-	user := User{
-		Email: email,
-		key:   privateKey,
-	}
-
-	// A client facilitates communication with the CA server.
-	client, err := acme.NewClient(acmeServer, &user, acme.RSA2048)
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client.ExcludeChallenges([]acme.Challenge{acme.DNS01})
-
-	// New users will need to register; be sure to save it
-	reg, err := client.Register()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	user.Registration = reg
-
-	// The client has a URL to the current Let's Encrypt Subscriber
-	// Agreement. The user will need to agree to it.
-	err = client.AgreeToTOS()
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	// The acme library takes care of completing the challenges to
-	// obtain the certificate(s). Of course, the hostnames must
-	// resolve to this machine or it will fail.
-	isBundle := false
-	certificates, failures := client.ObtainCertificate([]string{domain}, isBundle, nil)
-	if len(failures) > 0 {
-		log.Fatalln(failures)
 	}
 
 	// Each certificate comes back with the cert bytes, the bytes of
 	// the client's private key, and a certificate URL. This is where
 	// you should save them to files!
-	err = saveCerts(certsDir, certificates)
+	err = saveCerts(certsDir, newCertificates)
 	if err != nil {
 		log.Fatalln(err)
 	}
