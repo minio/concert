@@ -63,9 +63,9 @@ func genMain(c *cli.Context) {
 		cli.ShowCommandHelpAndExit(c, "gen", 1) // last argument is exit code
 	}
 
-	// Create certs folder.
-	certsFolder := c.String("folder")
-	if err := checkFolder(certsFolder); err != nil {
+	// Create certs dir.
+	certsDir := c.String("dir")
+	if err := checkFolder(certsDir); err != nil {
 		log.Fatalln(err)
 	}
 
@@ -73,8 +73,7 @@ func genMain(c *cli.Context) {
 	email := c.Args().Get(0)
 	domain := c.Args().Get(1)
 
-	// Create a user. New accounts need an email and private key to
-	// start with.
+	// Create a user. New accounts need an email and private key to start with.
 	const rsaKeySize = 2048
 	privateKey, err := rsa.GenerateKey(rand.Reader, rsaKeySize)
 	if err != nil {
@@ -87,9 +86,7 @@ func genMain(c *cli.Context) {
 		key:   privateKey,
 	}
 
-	// A client facilitates communication with the CA server. This CA
-	// URL is configured for a local dev instance of Boulder running
-	// in Docker in a VM.
+	// A client facilitates communication with the CA server.
 	client, err := acme.NewClient(acmeServer, &user, acme.RSA2048)
 	if err != nil {
 		log.Fatalln(err)
@@ -123,7 +120,7 @@ func genMain(c *cli.Context) {
 	// Each certificate comes back with the cert bytes, the bytes of
 	// the client's private key, and a certificate URL. This is where
 	// you should save them to files!
-	err = saveCerts(certsFolder, certificates)
+	err = saveCerts(certsDir, certificates)
 	if err != nil {
 		log.Fatalln(err)
 	}

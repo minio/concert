@@ -24,9 +24,27 @@ import (
 	"github.com/xenolf/lego/acme"
 )
 
+// load certificate meta resource.
+func loadCertMeta(certsDir string) (acme.CertificateResource, error) {
+	metaBytes, err := ioutil.ReadFile(filepath.Join(certsDir, "certs.json"))
+	if err != nil {
+		return acme.CertificateResource{}, err
+	}
+	var certRes acme.CertificateResource
+	err = json.Unmarshal(metaBytes, &certRes)
+	if err != nil {
+		return acme.CertificateResource{}, err
+	}
+	return certRes, nil
+}
+
+// load certs.
+func loadCert(certsDir string) ([]byte, error) {
+	return ioutil.ReadFile(filepath.Join(certsDir, "public.crt"))
+}
+
 // saveCerts saves the certificates to disk. This includes the
-// certificate file itself, the private key, and the json metadata
-// file.
+// certificate file itself, the private key, and the json metadata file.
 func saveCerts(certsDir string, cert acme.CertificateResource) error {
 	// Save cert file.
 	err := ioutil.WriteFile(filepath.Join(certsDir, "public.crt"), cert.Certificate, 0600)

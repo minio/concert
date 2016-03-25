@@ -20,16 +20,29 @@ import "github.com/minio/cli"
 
 var commands = []cli.Command{
 	genCmd,
+	renewCmd,
 }
 
 var genCmd = cli.Command{
 	Name:  "gen",
-	Usage: "Generate certificates",
+	Usage: "Generate certificates.",
 	Flags: []cli.Flag{
 		cli.StringFlag{
-			Name:  "folder",
-			Value: "certs",
+			Name:  "dir",
+			Value: "certs", // Default.
 		},
 	},
 	Action: genMain,
+}
+
+var renewCmd = cli.Command{
+	Name:  "renew",
+	Usage: "Renew certificates.",
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "dir",
+			Value: "certs", // Default.
+		},
+	},
+	Action: renewMain,
 }

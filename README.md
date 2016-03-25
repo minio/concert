@@ -14,16 +14,15 @@ $ go get -u github.com/minio/concert
 
 ### How to run?
 
-Generates certs in `certs` folder by default.
+Generates certs in `certs` directory by default.
 ```
 $ sudo concert gen <EMAIL> <DOMAIN>
 ```
 
-
-Generate certificate other than the default folder.
+Generate certificate other than the default directory.
 
 ```
-$ sudo concert gen --folder my-folder <EMAIL> <DOMAIN>
+$ sudo concert gen --dir certs-dir <EMAIL> <DOMAIN>
 ```
 
 ## On linux
