@@ -16,7 +16,18 @@
 
 package main
 
-import "github.com/minio/cli"
+import (
+	"io/ioutil"
+	"log"
+
+	"github.com/minio/cli"
+	"github.com/xenolf/lego/acme"
+)
+
+func init() {
+	// Disable acme logging.
+	acme.Logger = log.New(ioutil.Discard, "", log.Lshortfile)
+}
 
 func main() {
 	app := cli.NewApp()

@@ -18,7 +18,7 @@ func renewMain(c *cli.Context) {
 	email := c.Args().Get(0)
 
 	// Renew a certificate.
-	newCertificates, err := renewCerts(email, certsDir)
+	newCertificates, err := renewCerts(certsDir, email)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -30,5 +30,5 @@ func renewMain(c *cli.Context) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-
+	log.Printf("Renewed certificates for user %s under %s\n", email, certsDir)
 }

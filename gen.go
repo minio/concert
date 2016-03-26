@@ -59,4 +59,5 @@ func genMain(c *cli.Context) {
 	if err != nil {
 		log.Fatalln(err)
 	}
+	log.Printf("Generated certificates for %s under %s\n", domain, certsDir)
 }
