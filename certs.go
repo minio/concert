@@ -20,7 +20,7 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -32,6 +32,16 @@ import (
 // renewDaysLimit - renewal is not initated if cert is valid with in this limit.
 const renewDaysLimit = 45 // Number of days.
 
+// getCert expiration time.
+func getCertExpTime(certsDir string) (time.Time, error) {
+	certBytes, err := loadCert(certsDir)
+	if err != nil {
+		return time.Time{}, err
+	}
+	return acme.GetPEMCertExpiration(certBytes)
+}
+
+// generate certificates.
 func genCerts(email, domain string) (acme.CertificateResource, error) {
 	// Create a user. New accounts need an email and private key to start with.
 	const rsaKeySize = 2048
@@ -79,7 +89,7 @@ func genCerts(email, domain string) (acme.CertificateResource, error) {
 	return newCertificates, nil
 }
 
-// Renew certs.
+// Renew certificates.
 func renewCerts(certsDir, email string) (acme.CertificateResource, error) {
 	certBytes, err := loadCert(certsDir)
 	if err != nil {
@@ -87,8 +97,9 @@ func renewCerts(certsDir, email string) (acme.CertificateResource, error) {
 	}
 
 	expTime, err := acme.GetPEMCertExpiration(certBytes)
-	if int(expTime.Sub(time.Now()).Hours()/24.0) > renewDaysLimit {
-		return acme.CertificateResource{}, errors.New("Keys have not expired yet, will not renew.")
+	expTimeDays := int(expTime.Sub(time.Now()).Hours() / 24.0)
+	if expTimeDays > renewDaysLimit {
+		return acme.CertificateResource{}, fmt.Errorf("Keys have not expired yet, please renew in %d days.", expTimeDays)
 	}
 
 	// Create a user. New accounts need an email and private key to start with.

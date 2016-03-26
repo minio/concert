@@ -19,6 +19,7 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/minio/cli"
 )
@@ -59,5 +60,9 @@ func genMain(c *cli.Context) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Printf("Generated certificates for %s under %s\n", domain, certsDir)
+	expTime, err := getCertExpTime(certsDir)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	log.Printf("Generated certificates for %s under %s will expire in %d days.\n", domain, certsDir, int(expTime.Sub(time.Now()).Hours()/24.0))
 }
