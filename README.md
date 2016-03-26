@@ -34,6 +34,11 @@ Generate certificates in custom directory.
 $ sudo concert renew --dir my-certs-dir <EMAIL>
 ```
 
+Run a server with automatic renewal.
+```
+$ sudo concert server <EMAIL> <DOMAIN>
+```
+
 <blockquote>
 Concert requires root on all platforms other than Linux. On linux you can use
 setcap permissions to allow concert to have permissions to bind ports.
