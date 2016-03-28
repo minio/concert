@@ -24,6 +24,7 @@ import (
 	"github.com/minio/cli"
 )
 
+// ACME CA url. -- TODO make this configurable.
 const acmeServer = "https://acme-staging.api.letsencrypt.org/directory"
 
 func checkFolder(path string) error {
@@ -33,6 +34,7 @@ func checkFolder(path string) error {
 	return nil
 }
 
+// main for gen command.
 func genMain(c *cli.Context) {
 	if !c.Args().Present() || c.Args().First() == "help" {
 		cli.ShowCommandHelpAndExit(c, "gen", 1) // last argument is exit code
