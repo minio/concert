@@ -25,7 +25,10 @@ import (
 )
 
 // ACME CA url. -- TODO make this configurable.
-const acmeServer = "https://acme-staging.api.letsencrypt.org/directory"
+const (
+	acmeStagingServer = "https://acme-staging.api.letsencrypt.org/directory"
+	acmeServer        = "https://acme-v01.api.letsencrypt.org/directory"
+)
 
 func checkFolder(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
