@@ -26,7 +26,7 @@ var commands = []cli.Command{
 
 var genCmd = cli.Command{
 	Name:  "gen",
-	Usage: "Generate certificates.",
+	Usage: "Generate certificates (valid for 90 days).",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "dir",
@@ -38,7 +38,7 @@ var genCmd = cli.Command{
 
 var renewCmd = cli.Command{
 	Name:  "renew",
-	Usage: "Renew certificates.",
+	Usage: "Renew certificates (valid for 90 days).",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "dir",
@@ -50,7 +50,7 @@ var renewCmd = cli.Command{
 
 var serverCmd = cli.Command{
 	Name:  "server",
-	Usage: "Run in server mode, automatically renews certificates as needed.",
+	Usage: "Run in server mode to automatically renew certificate, once in every 45 days.",
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "dir",
