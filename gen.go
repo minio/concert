@@ -17,8 +17,11 @@
 package main
 
 import (
+	"errors"
 	"log"
+	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/minio/cli"
@@ -48,12 +51,27 @@ func genMain(c *cli.Context) {
 	if err := checkFolder(certsDir); err != nil {
 		log.Fatalln(err)
 	}
+	// Sub domains value.
+	subDomainsValue := c.String("sub-domains")
+	var subDomains []string
+	if len(subDomainsValue) > 0 {
+		subDomains = strings.Split(subDomainsValue, ",")
+	}
 
 	// Get email and domain.
 	email := c.Args().Get(0)
 	domain := c.Args().Get(1)
 
-	newCertificates, err := genCerts(email, domain)
+	// Validate if its a valid domain.
+	if !isValidDomain(domain) {
+		log.Fatalln(&net.DNSError{Err: "Invalid domain name", Name: domain})
+	}
+	// Validate if domain is already a sub domain, error if
+	// sub-domains option is specified.
+	if isSubDomain(domain) && len(subDomainsValue) > 0 {
+		log.Fatalln(errors.New("Domain is already a subdomain, SSL certs not allowed for sub sub domains."))
+	}
+	newCertificates, err := genCerts(email, domain, subDomains)
 	if err != nil {
 		log.Fatalln(err)
 	}

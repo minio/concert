@@ -23,7 +23,19 @@ certs.json public.crt private.key
 ```
 NOTE: Generated certificates are valid only for a maximum of 90 days. Please visit the following link for more details - [https://letsencrypt.org/2015/11/09/why-90-days.html](https://letsencrypt.org/2015/11/09/why-90-days.html)
 
-### How to renew a certificate?
+## How to generate a certificate bundle for various sub domains?
+To generate certificates for `example.com` and its sub domains ‘www’, ‘ftp’ and ‘mail’, use `sub-domains` command line option.
+```bash
+sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
+```
+
+Successfully generated bundled certs for sub domains ‘www’, ‘ftp’ and ‘mail’.
+```bash
+sudo ls certs
+certs.json public.crt private.key
+```
+
+## How to renew a certificate?
 To renew a certificate for example.com under ‘certs’ directory. New certs are generated and saved in the same directory as before.
 ```bash
 sudo concert renew admin@example.com
@@ -33,6 +45,12 @@ sudo concert renew admin@example.com
 You can run `concert` in server mode to automatically renew certificates, once in every 45 days.
 ```bash
 sudo concert server --dir my-certs admin@example.com example.com
+```
+
+## How to automatically renew certificates for various sub domains?
+To automatically renew cerificates for `example.com` and its sub domains ‘www’, ‘ftp’ and ‘mail’, use `sub-domains` command line option.
+```bash
+sudo concert server --sub-domains www,ftp,mail admin@example.com example.com
 ```
 
 ### FAQ

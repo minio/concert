@@ -17,7 +17,10 @@
 package main
 
 import (
+	"errors"
 	"log"
+	"net"
+	"strings"
 	"time"
 
 	"github.com/minio/cli"
@@ -33,12 +36,26 @@ func serverMain(c *cli.Context) {
 	// Renew keys from this dir.
 	certsDir := c.String("dir")
 
+	// Sub domains if any.
+	subDomainsValue := c.String("sub-domains")
+	subDomains := strings.Split(subDomainsValue, ",")
+
 	// Get email and domain.
 	email := c.Args().Get(0)
 	domain := c.Args().Get(1)
 
+	// Validate if its a valid domain.
+	if !isValidDomain(domain) {
+		log.Fatalln(&net.DNSError{Err: "Invalid domain name", Name: domain})
+	}
+	// Validate if domain is already a sub domain, error if
+	// sub-domains option is specified.
+	if isSubDomain(domain) && len(subDomainsValue) > 0 {
+		log.Fatalln(errors.New("Domain is already a subdomain, SSL certs not allowed for sub sub domains."))
+	}
+
 	if !isCertAvailable(certsDir) {
-		newCertificates, err := genCerts(email, domain)
+		newCertificates, err := genCerts(email, domain, subDomains)
 		if err != nil {
 			log.Fatalln(err)
 		}
