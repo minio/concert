@@ -31,6 +31,11 @@ var genCmd = cli.Command{
 		cli.StringFlag{
 			Name:  "dir",
 			Value: "certs", // Default.
+			Usage: "Generated certs destination directory. [DEFAULT: \"certs\"]",
+		},
+		cli.StringFlag{
+			Name:  "sub-domains",
+			Usage: "Generate certs for requested sub-domains.",
 		},
 	},
 	Action: genMain,
@@ -55,6 +60,11 @@ var serverCmd = cli.Command{
 		cli.StringFlag{
 			Name:  "dir",
 			Value: "certs", // Default.
+			Usage: "Generated certs destination directory. [DEFAULT: \"certs\"]",
+		},
+		cli.StringFlag{
+			Name:  "sub-domains",
+			Usage: "Generate certs for requested sub-domains.",
 		},
 	},
 	Action: serverMain,

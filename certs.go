@@ -24,6 +24,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/xenolf/lego/acme"
@@ -41,8 +42,46 @@ func getCertExpTime(certsDir string) (time.Time, error) {
 	return acme.GetPEMCertExpiration(certBytes)
 }
 
+// isValidDomain validates if input string is a valid domain name.
+func isValidDomain(host string) bool {
+	// See RFC 1035, RFC 3696.
+	host = strings.TrimSpace(host)
+	if len(host) == 0 || len(host) > 255 {
+		return false
+	}
+	// host cannot start or end with "-"
+	if host[len(host)-1:] == "-" || host[:1] == "-" {
+		return false
+	}
+	// host cannot start or end with "_"
+	if host[len(host)-1:] == "_" || host[:1] == "_" {
+		return false
+	}
+	// host cannot start or end with a "."
+	if host[len(host)-1:] == "." || host[:1] == "." {
+		return false
+	}
+	// All non alphanumeric characters are invalid.
+	if strings.ContainsAny(host, "`~!@#$%^&*()+={}[]|\\\"';:><?/") {
+		return false
+	}
+	// No need to regexp match, since the list is non-exhaustive.
+	// We let it valid and fail later.
+	return true
+}
+
+// isSubDomain - is domain a subdomain.
+func isSubDomain(domain string) bool {
+	domainParts := strings.Split(domain, ".")
+	// More than 2 parts in a domain name, its a subdomain.
+	if len(domainParts) > 2 {
+		return true
+	}
+	return false
+}
+
 // generate certificates.
-func genCerts(email, domain string) (acme.CertificateResource, error) {
+func genCerts(email, domain string, subDomains []string) (acme.CertificateResource, error) {
 	// Create a user. New accounts need an email and private key to start with.
 	const rsaKeySize = 2048
 	privateKey, err := rsa.GenerateKey(rand.Reader, rsaKeySize)
@@ -78,13 +117,26 @@ func genCerts(email, domain string) (acme.CertificateResource, error) {
 		return acme.CertificateResource{}, err
 	}
 
+	domains := []string{domain}
+	if !isSubDomain(domain) {
+		for _, subDomain := range subDomains {
+			domains = append(domains, subDomain+"."+domain)
+		}
+	}
 	// The acme library takes care of completing the challenges to
 	// obtain the certificate(s). Of course, the hostnames must
 	// resolve to this machine or it will fail.
-	isBundle := false
-	newCertificates, failures := client.ObtainCertificate([]string{domain}, isBundle, nil)
+	isBundle := true // Bundle all domains into one.
+	newCertificates, failures := client.ObtainCertificate(domains, isBundle, nil)
 	if len(failures) > 0 {
-		return acme.CertificateResource{}, failures[domain]
+		var failedDomains []string
+		var failedDomainsErrors []error
+		for failedDomain, failedDomainErr := range failures {
+			failedDomains = append(failedDomains, failedDomain)
+			failedDomainsErrors = append(failedDomainsErrors, failedDomainErr)
+		}
+		failure := fmt.Errorf("Failed to obtain certificates for Domains: %s, with following errors %s respectively.", failedDomains, failedDomainsErrors)
+		return acme.CertificateResource{}, failure
 	}
 	return newCertificates, nil
 }
@@ -130,9 +182,10 @@ func renewCerts(certsDir, email string) (acme.CertificateResource, error) {
 		return acme.CertificateResource{}, err
 	}
 
+	// Save current cert bytes.
 	certMeta.Certificate = certBytes
 
-	isBundle := false
+	isBundle := true // Bundle all domains into one.
 	newCertificates, err := client.RenewCertificate(certMeta, isBundle)
 	if err != nil {
 		return acme.CertificateResource{}, err
