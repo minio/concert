@@ -74,10 +74,7 @@ func isValidDomain(host string) bool {
 func isSubDomain(domain string) bool {
 	domainParts := strings.Split(domain, ".")
 	// More than 2 parts in a domain name, its a subdomain.
-	if len(domainParts) > 2 {
-		return true
-	}
-	return false
+	return len(domainParts) > 2
 }
 
 // generate certificates.
@@ -244,13 +241,7 @@ func saveCerts(certsDir string, cert acme.CertificateResource) error {
 
 // Verify if certs are available in a certs dir.
 func isCertAvailable(certsDir string) bool {
-	_, err := os.Stat(filepath.Join(certsDir, "public.crt"))
-	if err != nil {
-		return false
-	}
-	_, err = os.Stat(filepath.Join(certsDir, "private.key"))
-	if err != nil {
-		return false
-	}
-	return true
+	_, crtErr := os.Stat(filepath.Join(certsDir, "public.crt"))
+	_, keyErr := os.Stat(filepath.Join(certsDir, "private.key"))
+	return crtErr == nil && keyErr == nil
 }

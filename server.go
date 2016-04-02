@@ -66,26 +66,30 @@ func serverMain(c *cli.Context) {
 		if err != nil {
 			log.Fatalln(err)
 		}
-		log.Printf("Generated certificates for %s under %s\n", domain, certsDir)
+		expTime, err := getCertExpTime(certsDir)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Printf("Generated certificates for %s under %s will expire in %d days.\n", domain, certsDir, int(expTime.Sub(time.Now()).Hours()/24.0))
 	}
 	log.Printf("Starting timer thread waiting for %d\n", renewDaysLimit)
 	// Initialize a new timer, ticks every 45 days.
-	ticker := time.NewTicker((renewDaysLimit - 1) * 24 * time.Hour)
-	for {
-		select {
-		case <-ticker.C:
-			newCertificates, err := renewCerts(certsDir, email)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			// Each certificate comes back with the cert bytes, the bytes
-			// of the client's private key, and a certificate URL. This is
-			// where you should save them to files!
-			err = saveCerts(certsDir, newCertificates)
-			if err != nil {
-				log.Fatalln(err)
-			}
-			log.Printf("Renewed certificates for user %s under %s\n", email, certsDir)
+	for range time.Tick((renewDaysLimit - 1) * 24 * time.Hour) {
+		newCertificates, err := renewCerts(certsDir, email)
+		if err != nil {
+			log.Fatalln(err)
 		}
+		// Each certificate comes back with the cert bytes, the bytes
+		// of the client's private key, and a certificate URL. This is
+		// where you should save them to files!
+		err = saveCerts(certsDir, newCertificates)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		expTime, err := getCertExpTime(certsDir)
+		if err != nil {
+			log.Fatalln(err)
+		}
+		log.Printf("Renewed certificates for %s under %s will expire in %d days.\n", domain, certsDir, int(expTime.Sub(time.Now()).Hours()/24.0))
 	}
 }
