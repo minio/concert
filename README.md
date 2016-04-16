@@ -7,18 +7,18 @@ Concert is a console based certificate generation tool for [letsencrypt.org](htt
 * Working email address for the domain.
 
 ### Download
-We **STRONGLY RECOMMEND** installing `concert` from source, because it requires root access. Download pre-built binaries [here](https://github.com/minio/concert/releases).
+We **STRONGLY RECOMMEND** installing `concert` from source, because it requires root access. Download pre-built binaries from [here](https://github.com/minio/concert/releases).
 
 ### Compile from Source (RECOMMENDED)
-Assuming that you golang installed already, run the following command to download and install `concert` from source.
+We are assuming that you have installed golang already, run the following command to download and install `concert` from source.
 ```
 $ go get -u github.com/minio/concert
 ```
 ### How to generate a certificate?
-To generate a certificate and key for `example.com` under `my-certs` directory.
+To generate a certificate and key for `example.com`, run the following command on `example.com` server as `root`, under `my-certs` directory.
 ```bash
-sudo concert gen --dir my-certs admin@example.com example.com
-sudo ls my-certs
+$ sudo concert gen --dir my-certs admin@example.com example.com
+$ sudo ls my-certs
 certs.json public.crt private.key
 ```
 NOTE: Generated certificates are valid only for a maximum of 90 days. Please visit the following link for more details - [https://letsencrypt.org/2015/11/09/why-90-days.html](https://letsencrypt.org/2015/11/09/why-90-days.html)
@@ -26,19 +26,19 @@ NOTE: Generated certificates are valid only for a maximum of 90 days. Please vis
 ## How to generate a certificate bundle for various sub domains?
 To generate certificates for `example.com` and its sub domains ‘www’, ‘ftp’ and ‘mail’, use `sub-domains` command line option. You need to run this command as `root` on the `example.com` server.
 ```bash
-sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
+$ sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
 ```
 
 Successfully generated bundled certs for sub domains ‘www’, ‘ftp’ and ‘mail’.
 ```bash
-sudo ls certs
+$ sudo ls certs
 certs.json public.crt private.key
 ```
 
 ## How to renew a certificate?
 To renew a certificate for example.com under ‘certs’ directory. New certs are generated and saved in the same directory as before.
 ```bash
-sudo concert renew admin@example.com
+$ sudo concert renew admin@example.com
 ```
 
 ### How to automatically renew certificates?
