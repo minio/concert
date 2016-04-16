@@ -24,7 +24,7 @@ certs.json public.crt private.key
 NOTE: Generated certificates are valid only for a maximum of 90 days. Please visit the following link for more details - [https://letsencrypt.org/2015/11/09/why-90-days.html](https://letsencrypt.org/2015/11/09/why-90-days.html)
 
 ## How to generate a certificate bundle for various sub domains?
-To generate certificates for `example.com` and its sub domains ‘www’, ‘ftp’ and ‘mail’, use `sub-domains` command line option.
+To generate certificates for `example.com` and its sub domains ‘www’, ‘ftp’ and ‘mail’, use `sub-domains` command line option. You need to run this command as `root` on the `example.com` server.
 ```bash
 sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
 ```
