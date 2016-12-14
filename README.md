@@ -18,7 +18,7 @@ We are assuming that you have installed golang already, run the following comman
 
 ```sh
 
-$ go get -u github.com/minio/concert
+go get -u github.com/minio/concert
 
 ```
 
@@ -28,8 +28,8 @@ To generate a certificate and key for `example.com`, run the following command o
 
 ```sh
 
-$ sudo concert gen --dir my-certs admin@example.com example.com
-$ sudo ls my-certs
+sudo concert gen --dir my-certs admin@example.com example.com
+sudo ls my-certs
 certs.json public.crt private.key
 
 ```
@@ -42,7 +42,7 @@ To generate certificates for `example.com` and its sub domains ‘www’, ‘ftp
 
 ```sh
 
-$ sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
+sudo concert gen --sub-domains www,ftp,mail admin@example.com example.com
 
 ```
 
@@ -50,7 +50,7 @@ Successfully generated bundled certs for sub domains ‘www’, ‘ftp’ and �
 
 ```bash
 
-$ sudo ls certs
+sudo ls certs
 certs.json public.crt private.key
 
 ```
@@ -61,7 +61,7 @@ To renew a certificate for example.com under ‘certs’ directory. New certs ar
 
 ```sh
 
-$ sudo concert renew admin@example.com
+sudo concert renew admin@example.com
 
 ```
 
