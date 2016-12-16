@@ -124,7 +124,7 @@ func genCerts(email, domain string, subDomains []string) (acme.CertificateResour
 	// obtain the certificate(s). Of course, the hostnames must
 	// resolve to this machine or it will fail.
 	isBundle := true // Bundle all domains into one.
-	newCertificates, failures := client.ObtainCertificate(domains, isBundle, nil)
+	newCertificates, failures := client.ObtainCertificate(domains, isBundle, nil, true)
 	if len(failures) > 0 {
 		var failedDomains []string
 		var failedDomainsErrors []error
@@ -183,7 +183,7 @@ func renewCerts(certsDir, email string) (acme.CertificateResource, error) {
 	certMeta.Certificate = certBytes
 
 	isBundle := true // Bundle all domains into one.
-	newCertificates, err := client.RenewCertificate(certMeta, isBundle)
+	newCertificates, err := client.RenewCertificate(certMeta, isBundle, true)
 	if err != nil {
 		return acme.CertificateResource{}, err
 	}
