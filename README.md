@@ -1,4 +1,4 @@
-# Concert [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Minio/minio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+# Concert [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
 
 Concert is a console based certificate generation tool for [letsencrypt.org](https://letsencrypt.org/). `Let’s Encrypt` is a free (as in free beer), automated, and open certificate authority.
 
