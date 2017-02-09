@@ -57,6 +57,12 @@ func genMain(c *cli.Context) {
 	if len(subDomainsValue) > 0 {
 		subDomains = strings.Split(subDomainsValue, ",")
 	}
+	// SAN domains value.
+	sanDomainsValue := c.String("san-domains")
+	var sanDomains []string
+	if len(sanDomainsValue) > 0 {
+		sanDomains = strings.Split(sanDomainsValue, ",")
+	}
 
 	// Get email and domain.
 	email := c.Args().Get(0)
@@ -71,7 +77,7 @@ func genMain(c *cli.Context) {
 	if isSubDomain(domain) && len(subDomainsValue) > 0 {
 		log.Fatalln(errors.New("Domain is already a subdomain, SSL certs not allowed for sub sub domains."))
 	}
-	newCertificates, err := genCerts(email, domain, subDomains)
+	newCertificates, err := genCerts(email, domain, subDomains, sanDomains)
 	if err != nil {
 		log.Fatalln(err)
 	}

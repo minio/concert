@@ -40,6 +40,10 @@ func serverMain(c *cli.Context) {
 	subDomainsValue := c.String("sub-domains")
 	subDomains := strings.Split(subDomainsValue, ",")
 
+	// SAN domains if any.
+	sanDomainsValue := c.String("san-domains")
+	sanDomains := strings.Split(sanDomainsValue, ",")
+
 	// Get email and domain.
 	email := c.Args().Get(0)
 	domain := c.Args().Get(1)
@@ -55,7 +59,7 @@ func serverMain(c *cli.Context) {
 	}
 
 	if !isCertAvailable(certsDir) {
-		newCertificates, err := genCerts(email, domain, subDomains)
+		newCertificates, err := genCerts(email, domain, subDomains, sanDomains)
 		if err != nil {
 			log.Fatalln(err)
 		}

@@ -78,7 +78,7 @@ func isSubDomain(domain string) bool {
 }
 
 // generate certificates.
-func genCerts(email, domain string, subDomains []string) (acme.CertificateResource, error) {
+func genCerts(email, domain string, subDomains []string, sanDomains []string) (acme.CertificateResource, error) {
 	// Create a user. New accounts need an email and private key to start with.
 	const rsaKeySize = 2048
 	privateKey, err := rsa.GenerateKey(rand.Reader, rsaKeySize)
@@ -120,6 +120,12 @@ func genCerts(email, domain string, subDomains []string) (acme.CertificateResour
 			domains = append(domains, subDomain+"."+domain)
 		}
 	}
+
+	// Append SAN Domains
+	for _, sanDomain := range sanDomains {
+		domains = append(domains, sanDomain)
+	}
+
 	// The acme library takes care of completing the challenges to
 	// obtain the certificate(s). Of course, the hostnames must
 	// resolve to this machine or it will fail.

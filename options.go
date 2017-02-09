@@ -37,6 +37,10 @@ var genCmd = cli.Command{
 			Name:  "sub-domains",
 			Usage: "Generate certs for requested sub-domains.",
 		},
+		cli.StringFlag{
+			Name:  "san-domains",
+			Usage: "Generate certs for requested san-domains.",
+		},
 	},
 	Action: genMain,
 }
@@ -65,6 +69,10 @@ var serverCmd = cli.Command{
 		cli.StringFlag{
 			Name:  "sub-domains",
 			Usage: "Generate certs for requested sub-domains.",
+		},
+		cli.StringFlag{
+			Name:  "san-domains",
+			Usage: "Generate certs for requested san-domains.",
 		},
 	},
 	Action: serverMain,
