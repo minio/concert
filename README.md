@@ -1,3 +1,6 @@
+***DEPRECATED - This project is deprecated and not maintained anymore.*** 
+***It is recommended all users use https://certbot.eff.org/ instead.***
+
 # Concert [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
 
 Concert is a console based certificate generation tool for [letsencrypt.org](https://letsencrypt.org/). `Let’s Encrypt` is a free (as in free beer), automated, and open certificate authority.
